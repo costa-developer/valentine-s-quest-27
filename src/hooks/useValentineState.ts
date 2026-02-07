@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Response {
   answer: "yes" | "maybe";
@@ -41,6 +42,50 @@ export const useValentineState = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
+  const syncResponseToDb = async (answer: "yes" | "maybe", questionId: number) => {
+    try {
+      await supabase.from("valentine_responses").insert({
+        question_id: questionId,
+        answer: answer,
+      });
+    } catch (error) {
+      console.error("Error syncing response:", error);
+    }
+  };
+
+  const syncStatusToDb = async (accepted: boolean, loveMeterValue: number, acceptedAt: string | null) => {
+    try {
+      // Check if status exists
+      const { data: existing } = await supabase
+        .from("valentine_status")
+        .select("id")
+        .limit(1)
+        .maybeSingle();
+
+      if (existing) {
+        // Update existing
+        await supabase
+          .from("valentine_status")
+          .update({
+            accepted,
+            love_meter_value: loveMeterValue,
+            accepted_at: acceptedAt,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", existing.id);
+      } else {
+        // Insert new
+        await supabase.from("valentine_status").insert({
+          accepted,
+          love_meter_value: loveMeterValue,
+          accepted_at: acceptedAt,
+        });
+      }
+    } catch (error) {
+      console.error("Error syncing status:", error);
+    }
+  };
+
   const addResponse = (answer: "yes" | "maybe", questionId: number) => {
     const newResponse: Response = {
       answer,
@@ -57,15 +102,24 @@ export const useValentineState = () => {
       loveMeterValue: newLoveMeter,
       currentQuestion: prev.currentQuestion + 1,
     }));
+
+    // Sync to database
+    syncResponseToDb(answer, questionId);
+    syncStatusToDb(false, newLoveMeter, null);
   };
 
   const setAccepted = () => {
+    const acceptedAt = new Date().toISOString();
+    
     setState((prev) => ({
       ...prev,
       accepted: true,
-      acceptedAt: new Date().toISOString(),
+      acceptedAt,
       loveMeterValue: 100,
     }));
+
+    // Sync to database
+    syncStatusToDb(true, 100, acceptedAt);
   };
 
   const reset = () => {
