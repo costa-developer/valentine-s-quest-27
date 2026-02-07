@@ -1,29 +1,22 @@
-import { useState } from "react";
 import { FloatingHearts } from "@/components/FloatingHearts";
 import { QuestionCard } from "@/components/QuestionCard";
 import { SuccessScreen } from "@/components/SuccessScreen";
-import { Dashboard } from "@/components/Dashboard";
 import { LoveMeter } from "@/components/LoveMeter";
 import { useValentineState } from "@/hooks/useValentineState";
 import { questions, maybeMessages } from "@/data/questions";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
-
-type View = "questions" | "success" | "dashboard";
+import { useState } from "react";
 
 const Index = () => {
   const {
-    responses,
     loveMeterValue,
     accepted,
-    acceptedAt,
     currentQuestion,
     addResponse,
     setAccepted,
-    reset,
   } = useValentineState();
 
-  const [view, setView] = useState<View>(accepted ? "success" : "questions");
   const [maybeCount, setMaybeCount] = useState(0);
 
   const handleAnswer = (answer: "yes" | "maybe" | "no") => {
@@ -44,49 +37,14 @@ const Index = () => {
     // Check if this was the last question or they said yes on any
     if (answer === "yes" || currentQuestion >= questions.length - 1) {
       setAccepted();
-      setView("success");
     }
   };
 
-  const handleReset = () => {
-    reset();
-    setView("questions");
-    setMaybeCount(0);
-  };
-
-  const handleViewDashboard = () => {
-    setView("dashboard");
-  };
-
-  const handleBackFromDashboard = () => {
-    setView(accepted ? "success" : "questions");
-  };
-
-  if (view === "dashboard") {
+  if (accepted) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-valentine-blush">
         <FloatingHearts />
-        <Dashboard
-          responses={responses}
-          loveMeterValue={loveMeterValue}
-          accepted={accepted}
-          acceptedAt={acceptedAt}
-          onBack={handleBackFromDashboard}
-          onReset={handleReset}
-        />
-      </div>
-    );
-  }
-
-  if (view === "success" || accepted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-valentine-blush">
-        <FloatingHearts />
-        <SuccessScreen
-          loveMeterValue={loveMeterValue}
-          onReset={handleReset}
-          onViewDashboard={handleViewDashboard}
-        />
+        <SuccessScreen loveMeterValue={loveMeterValue} />
       </div>
     );
   }
