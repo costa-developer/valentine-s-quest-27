@@ -1,16 +1,13 @@
 import { Heart, PartyPopper, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Confetti } from "./Confetti";
 import { LoveMeter } from "./LoveMeter";
 
 interface SuccessScreenProps {
   loveMeterValue: number;
-  onReset: () => void;
-  onViewDashboard: () => void;
 }
 
-export const SuccessScreen = ({ loveMeterValue, onReset, onViewDashboard }: SuccessScreenProps) => {
+export const SuccessScreen = ({ loveMeterValue }: SuccessScreenProps) => {
   return (
     <>
       <Confetti />
@@ -22,7 +19,7 @@ export const SuccessScreen = ({ loveMeterValue, onReset, onViewDashboard }: Succ
             </div>
             
             <h1 className="text-4xl md:text-5xl font-romantic text-valentine-red mb-4">
-              She Said Yes! 💕
+              You Said Yes! 💕
             </h1>
             
             <div className="flex justify-center gap-2 mb-6">
@@ -40,19 +37,13 @@ export const SuccessScreen = ({ loveMeterValue, onReset, onViewDashboard }: Succ
               <Sparkles className="inline w-5 h-5 ml-1 text-valentine-pink" />
             </p>
 
-            <div className="mb-8">
+            <div className="mb-4">
               <LoveMeter value={loveMeterValue} />
             </div>
 
-            <div className="flex flex-col gap-3">
-              <Button variant="valentine" size="lg" onClick={onViewDashboard} className="w-full">
-                <Heart className="w-5 h-5 mr-2" />
-                View Love Dashboard
-              </Button>
-              <Button variant="reset" size="default" onClick={onReset} className="w-full">
-                Ask Again 💌
-              </Button>
-            </div>
+            <p className="text-valentine-red font-romantic text-2xl mt-6">
+              I love you! 💕
+            </p>
           </CardContent>
         </Card>
       </div>
