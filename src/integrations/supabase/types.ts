@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      valentine_responses: {
+        Row: {
+          answer: Database["public"]["Enums"]["answer_type"]
+          created_at: string
+          id: string
+          question_id: number
+        }
+        Insert: {
+          answer: Database["public"]["Enums"]["answer_type"]
+          created_at?: string
+          id?: string
+          question_id: number
+        }
+        Update: {
+          answer?: Database["public"]["Enums"]["answer_type"]
+          created_at?: string
+          id?: string
+          question_id?: number
+        }
+        Relationships: []
+      }
+      valentine_status: {
+        Row: {
+          accepted: boolean
+          accepted_at: string | null
+          id: string
+          love_meter_value: number
+          updated_at: string
+        }
+        Insert: {
+          accepted?: boolean
+          accepted_at?: string | null
+          id?: string
+          love_meter_value?: number
+          updated_at?: string
+        }
+        Update: {
+          accepted?: boolean
+          accepted_at?: string | null
+          id?: string
+          love_meter_value?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +67,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      answer_type: "yes" | "maybe"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +194,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      answer_type: ["yes", "maybe"],
+    },
   },
 } as const
